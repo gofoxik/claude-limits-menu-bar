@@ -12,7 +12,7 @@ final class UsageRowView: NSView {
         self.title = title
         self.percent = percent
         self.resetText = resetText
-        super.init(frame: NSRect(x: 0, y: 0, width: width, height: 58))
+        super.init(frame: NSRect(x: 0, y: 0, width: width, height: 46))
         autoresizingMask = [.width]
     }
 
@@ -30,16 +30,16 @@ final class UsageRowView: NSView {
             .font: NSFont.systemFont(ofSize: 12, weight: .semibold),
             .foregroundColor: NSColor.labelColor,
         ]
-        (title as NSString).draw(at: NSPoint(x: pad, y: 9), withAttributes: titleAttrs)
+        (title as NSString).draw(at: NSPoint(x: pad, y: 5), withAttributes: titleAttrs)
 
         // Percentage (top-right).
         let pctStr = "\(Int(percent.rounded()))%" as NSString
         let pctSize = pctStr.size(withAttributes: titleAttrs)
-        pctStr.draw(at: NSPoint(x: bounds.width - pad - pctSize.width, y: 9),
+        pctStr.draw(at: NSPoint(x: bounds.width - pad - pctSize.width, y: 5),
                     withAttributes: titleAttrs)
 
         // Progress bar track.
-        let barRect = NSRect(x: pad, y: 30, width: bounds.width - pad * 2, height: 7)
+        let barRect = NSRect(x: pad, y: 24, width: bounds.width - pad * 2, height: 6)
         let radius = barRect.height / 2
         let track = NSBezierPath(roundedRect: barRect, xRadius: radius, yRadius: radius)
         NSColor.tertiaryLabelColor.withAlphaComponent(0.4).setFill()
@@ -61,7 +61,7 @@ final class UsageRowView: NSView {
                 .font: NSFont.systemFont(ofSize: 10, weight: .regular),
                 .foregroundColor: NSColor.secondaryLabelColor,
             ]
-            (resetText as NSString).draw(at: NSPoint(x: pad, y: 41), withAttributes: resetAttrs)
+            (resetText as NSString).draw(at: NSPoint(x: pad, y: 32), withAttributes: resetAttrs)
         }
     }
 }
