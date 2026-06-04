@@ -18,6 +18,13 @@ final class StatusController: NSObject, NSMenuDelegate {
     private var rateLimitedUntil: Date?
     private var isFetching = false
 
+    // Reused across rebuilds so its "last updated" suffix can be refreshed in place.
+    private lazy var refreshItem: NSMenuItem = {
+        let item = NSMenuItem(title: "Refresh now", action: #selector(refreshFromMenu), keyEquivalent: "r")
+        item.target = self
+        return item
+    }()
+
     override init() {
         super.init()
         statusItem.button?.imagePosition = .imageLeading
@@ -124,8 +131,7 @@ final class StatusController: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
 
-        let refreshItem = NSMenuItem(title: "Refresh now", action: #selector(refreshFromMenu), keyEquivalent: "r")
-        refreshItem.target = self
+        updateRefreshSubtitle()
         menu.addItem(refreshItem)
 
         let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
@@ -137,6 +143,20 @@ final class StatusController: NSObject, NSMenuDelegate {
 
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quitItem)
+    }
+
+    private func updateRefreshSubtitle() {
+        guard let last = lastFetchAt else {
+            refreshItem.title = "Refresh now"
+            return
+        }
+        let s = Int(Date().timeIntervalSince(last))
+        let rel: String
+        if s < 10        { rel = "just now" }
+        else if s < 60   { rel = "\(s)s ago" }
+        else if s < 3600 { rel = "\(s / 60)m ago" }
+        else             { rel = "\(s / 3600)h ago" }
+        refreshItem.title = "Refresh now (last updated: \(rel))"
     }
 
     private func addUsageRow(_ title: String, _ window: UsageWindow?, relative: Bool) {
@@ -181,6 +201,7 @@ final class StatusController: NSObject, NSMenuDelegate {
     }
 
     func menuWillOpen(_ menu: NSMenu) {
+        updateRefreshSubtitle()   // keep the "last updated" label accurate on every open
         // Only refresh on open if the data is getting stale; otherwise show the cache.
         if let last = lastFetchAt, Date().timeIntervalSince(last) < menuOpenMinInterval { return }
         performRefresh(force: false)
