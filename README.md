@@ -3,7 +3,7 @@
 A tiny native macOS menu bar app that shows your **Claude Code usage limits** as a circular
 progress ring — the same numbers the CLI's `/usage` command displays, always visible.
 
-<!-- Add a screenshot here -->
+![Claude Limits menu bar app showing the usage ring and dropdown](Screenshot.png)
 
 ## Features
 
